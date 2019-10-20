@@ -1,0 +1,17 @@
+[Unit]
+Description=mysmtpd
+
+[Service]
+WorkingDirectory=/path/to/smtpd
+ExecStart=/usr/bin/python3 -u ./server.py
+Restart=always
+Type=simple
+User=you
+Group=your_group
+KillSignal=SIGINT
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=mysmtpd
+
+[Install]
+WantedBy=multi-user.target
