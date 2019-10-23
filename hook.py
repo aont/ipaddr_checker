@@ -10,7 +10,7 @@ import config
 import sendgrid
 import syslog
 
-syslog.openlog("ipaddres")
+syslog.openlog("ipaddres-checker")
 
 newip_pattern = re.compile(r'接続先1：(\d+[.]\d+[.]\d+[.]\d+)')
 
@@ -44,13 +44,14 @@ def noipupdate(ipaddr):
 
 message_bytes = sys.stdin.buffer.read()
 message_str = message_bytes.decode('iso2022_jp', errors='replace')    
-match = newip_pattern.search(message_str)
-if match is None:
-    raise Exception("unexpected")
-ipaddr=match.group(1)
-mylog("IP Address: %s" % ipaddr)
 mailviasendgrid(message_str)
-noipupdate(ipaddr)
 
+match = newip_pattern.search(message_str)
+if match:
+    ipaddr=match.group(1)
+    mylog("IP Address: %s" % ipaddr)
+    noipupdate(ipaddr)
+else:
+    mylog("[warn] unexpected format")
 
 syslog.closelog()
